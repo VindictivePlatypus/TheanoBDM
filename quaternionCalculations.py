@@ -19,15 +19,17 @@ def unitQuat(q):
 	return [q[0]/normQuat(q),q[1]/normQuat(q),q[2]/normQuat(q),q[3]/normQuat(q)]
 
 a = T.fmatrix()
-b  = T.ftensor3()
 w = T.reshape(a,(2,2,4))
-#b = T.inv(w.norm(L=2,axis=2))
+b = T.inv(w.norm(L=2,axis=2))
 #c = T.nlinalg.AllocDiag()(b)
 #k = T.dot(c,w)
-f = theano.function([a],c)
+#f = theano.function([a],c)
+results,updates = theano.scan(lambda x : T.nlinalg.AllocDiag()(x), sequences=b)
+f = theano.function([a],results)
+
 
 def getLoss(target):
 	x = target.size
 	return x
 
-print(f(np.array([  [-1,-1,1,1,1,1,1,1],[.2,.3,.2,.1,.5,.6,.4,.9]   ]).astype("float32")))
+print(f(np.array([  [1,1,1,1,1,1,1,1],[.2,.3,.2,.1,.5,.6,.4,.9]   ]).astype("float32")))
